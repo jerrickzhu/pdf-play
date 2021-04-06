@@ -2,12 +2,12 @@ import React, { useRef, useEffect, useState } from 'react';
 import WebViewer from '@pdftron/pdfjs-express';
 import './App.css';
 import axios from 'axios';
-import ExpressUtils from '@pdftron/pdfjs-express-utils'
 
 
 const App = () => {
   const viewer = useRef(null);
   const [form, setForm] = useState([{
+    // need to make it so that these are arrays or something to store more data
     name: null,
     val: null
   }])
@@ -24,7 +24,7 @@ const App = () => {
     ).then((instance) => {
       const { docViewer, Annotations } = instance;
       const annotManager = docViewer.getAnnotationManager();
-      const utils = new ExpressUtils();
+      
 
       // save button. saves all relevant data and sends to backend
       instance.setHeaderItems(header => {
@@ -32,55 +32,55 @@ const App = () => {
           type: 'actionButton',
           img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
           onClick: async () => {
-            annotManager.exportAnnotCommand()
-            .then(xfdf => {
-              const dataObj = {
-                xfdfString: xfdf,
-                formData: form
-              }
-              axios.post("http://localhost:4000", {data: dataObj})
-              .then(response => {
-                console.log(response.data);
+            axios.get("http://localhost:4000")
+            .then(async response => {
+                const xfdf = response.data.xfdfData;
+                console.log(xfdf);
+                const fileData = await docViewer.getDocument().getFileData({});
+
+                const blob = new Blob([fileData], { type: 'application/json' });
+
+                let data = new FormData();
+                data.append('xfdf', xfdf);
+                data.append('file', blob);
+                data.append('license', '');
+
+                const res = await fetch('https://api.pdfjs.express/xfdf/merge', {
+                  method: 'post',
+                  body: data
+                }).then(resp => resp.json());
+
+                const { url, key, id } = res;
+
+                console.log(url);
+
+                const mergedFileBlob = await fetch(url, {
+                  method: 'get',
+                  headers: {
+                    Authorization: key
+                  }
+                }).then(resp => resp.blob());
+
+                instance.loadDocument(mergedFileBlob);
               })
-            })
+            // annotManager.exportAnnotCommand()
+            // .then(xfdf => {
+            //   const dataObj = {
+            //     xfdfString: xfdf,
+            //     formData: form
+            //   }
+            //   axios.post("http://localhost:4000", {data: dataObj})
+            //   .then(response => {
+            //     console.log(response.data);
+            //   })
+            // })
           
             // MERGE CODE BELOW. 
             // sends get request to backend,
             // which sends in xfdf data that I manually made
             // as a variable in server.js
             // problem is that once you try to load the blob
-            // it gets caught in some promise error???
-
-            // axios.get("http://localhost:4000")
-            // .then(response => {
-              // const xfdf = response.data.xfdfData;
-              // console.log(xfdf);            
-              // const fileData = await docViewer.getDocument().getFileData({});
-              
-              // const blob = new Blob([fileData], {type: 'application/json'});
-              
-              // let data = new FormData();
-              // data.append('xfdf', xfdf);
-              // data.append('file', blob);
-              // data.append('license', '');
-
-              // const response = await fetch('https://api.pdfjs.express/xfdf/merge', {
-              //   method: 'post',
-              //   body: data
-              // }).then(resp => resp.json());
-
-              // const { url, key, id } = response;
-              
-              // console.log(url);
-
-              // const mergedFileBlob = await fetch(url, {
-              //   headers: {
-              //     Authorization: key
-              //   }
-              // }).then(resp => resp.blob())
-
-              // instance.loadDocument(mergedFileBlob);
-            // })
+            // it gets caught in some promise error??? 
           }
         });
       });
