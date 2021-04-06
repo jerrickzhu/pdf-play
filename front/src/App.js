@@ -44,14 +44,42 @@ const App = () => {
               })
             })
           
+            // MERGE CODE BELOW. 
+            // sends get request to backend,
+            // which sends in xfdf data that I manually made
+            // as a variable in server.js
+            // problem is that once you try to load the blob
+            // it gets caught in some promise error???
+
             // axios.get("http://localhost:4000")
-            // .then(async response => {
-            //   console.log(response);
-            //   return response.data.xfdfString
-            // }).then(xfdfString => {
-            //   return instance.annotManager.importAnnotations(xfdfString)
-            // }).then(importedAnnotation => {
-            //   console.log(importedAnnotation);
+            // .then(response => {
+              // const xfdf = response.data.xfdfData;
+              // console.log(xfdf);            
+              // const fileData = await docViewer.getDocument().getFileData({});
+              
+              // const blob = new Blob([fileData], {type: 'application/json'});
+              
+              // let data = new FormData();
+              // data.append('xfdf', xfdf);
+              // data.append('file', blob);
+              // data.append('license', '');
+
+              // const response = await fetch('https://api.pdfjs.express/xfdf/merge', {
+              //   method: 'post',
+              //   body: data
+              // }).then(resp => resp.json());
+
+              // const { url, key, id } = response;
+              
+              // console.log(url);
+
+              // const mergedFileBlob = await fetch(url, {
+              //   headers: {
+              //     Authorization: key
+              //   }
+              // }).then(resp => resp.blob())
+
+              // instance.loadDocument(mergedFileBlob);
             // })
           }
         });
@@ -91,6 +119,10 @@ const App = () => {
       //     // })
       //   }
       // })
+
+
+      
+
 
     });
   }, []);
