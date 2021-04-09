@@ -34,8 +34,10 @@ const App = () => {
           onClick: async () => {
             axios.get("http://localhost:4000")
             .then(async response => {
+                console.log(response.data.xfdfData);
+                // const xfdf = `<?xml version="1.0" encoding="UTF-8" ?><xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve"><fields><field name="topmostSubform[0]"><field name="Page1[0]"><field name="FillText30[0]"><value></value></field><field name="FillText34[0]"><value></value></field><field name="FillText4278[0]"><value></value></field><field name="CheckBox2[0]"><value>Off</value></field><field name="CheckBx2[0]"><value>Off</value></field><field name="CheckBox4[0]"><value>Off</value></field><field name="CheckBox217[0]"><value>Off</value></field><field name="CheckBx217[0]"><value>Off</value></field><field name="FillText26[0]"><value></value></field><field name="CheckBox219[0]"><value>Off</value></field><field name="FillText21[0]"><value></value></field><field name="FillText34[1]"><value></value></field><field name="FillText30[1]"><value></value></field><field name="FillText34[2]"><value></value></field><field name="FillText30[2]"><value></value></field><field name="FillText21345341235431[0]"><value></value></field><field name="Header_sf[0]"><field name="TitlePartyName[0]"><field name="CaseName_ft[0]"><value></value></field><field name="CaseNumber_ft[0]"><value></value></field><field name="AppCaseNumber_ft[0]"><value></value></field></field><field name="AppCrtInfo_ft[0]"><field name="CheckBox23[0]"><value>Off</value></field><field name="CheckBox23[1]"><value>Off</value></field></field></field></field><field name="Page2[0]"><field name="FillText67[0]"><value></value></field><field name="FillText71[0]"><value></value></field><field name="FillText75[0]"><value></value></field><field name="FillText79[0]"><value></value></field><field name="CheckBox220[0]"><value>Off</value></field><field name="CheckBox221[0]"><value>Off</value></field><field name="SigDate[0]"><value></value></field><field name="T14[0]"><value></value></field><field name="CaptionPx_sf[0]"><field name="CaseName_sf[0]"><field name="CaseName_ft[0]"><value></value></field></field><field name="CaseNos_sf[0]"><field name="CaseNumber_ft[0]"><value></value></field><field name="AppCaseNumber_ft[0]"><value></value></field></field></field><field name="FillText67[1]"><value></value></field><field name="FillText71[1]"><value></value></field><field name="FillText75[1]"><value></value></field><field name="FillText79[1]"><value></value></field><field name="FillText67[2]"><value></value></field><field name="FillText71[2]"><value></value></field><field name="FillText75[2]"><value></value></field><field name="FillText79[2]"><value></value></field></field></field></fields><annots><text page="0" rect="55.98,457.61,86.97999999999999,488.61" color="#FFE6A2" flags="print,nozoom,norotate" name="8cd084a1-e613-de47-3e77-0a71ebd49c84" title="Guest" subject="Note" date="D:20210409083047-07'00'" creationdate="D:20210409083047-07'00'" icon="Comment" statemodel="Review"/></annots><pages><defmtx matrix="1,0,0,-1,0,792" /></pages></xfdf>`
                 const xfdf = response.data.xfdfData;
-                console.log(xfdf);
+                // console.log(xfdf === response.data.xfdfData);
                 const fileData = await docViewer.getDocument().getFileData({});
 
                 const blob = new Blob([fileData], { type: 'application/json' });
@@ -55,7 +57,6 @@ const App = () => {
                 console.log(url);
 
                 const mergedFileBlob = await fetch(url, {
-                  method: 'get',
                   headers: {
                     Authorization: key
                   }
@@ -104,25 +105,20 @@ const App = () => {
 
       // this code below just listens to any annotations made. it could
       // be handy if we wanted to implement an autosave system.
-      // annotManager.on('annotationChanged', async (annotations, action) => {
-      //   if (action === 'add') {
-      //     const xfdf = await annotManager.exportAnnotations({links: false, widgets: false});
-      //     const fileData = await docViewer.getDocument().getFileData({});
-
-      //     console.log(xfdf);
+      annotManager.on('annotationChanged', async (annotations, action) => {
+        if (action === 'add') {
+          console.log("hello")
+          console.log(annotations);
+          
 
         
-      //     // axios
-      //     // .post("http://localhost:4000", {data: xfdf})
-      //     // .then(response => {
-      //     //   console.log(response);
-      //     // })
-      //   }
-      // })
-
-
-      
-
+          // axios
+          // .post("http://localhost:4000", {INSERT DATA TO SEND FOR AUTOSAVE})
+          // .then(response => {
+          //   console.log(response);
+          // })
+        }
+      })
 
     });
   }, []);
