@@ -16,7 +16,10 @@ app.get('/', (req, res) => {
     res.send(obj);
 })
 
-
+app.post('/data', (req, res) => {
+    console.log(req.body);
+    res.send(`got this: ${req.body}`)
+})
 
 app.post('/', (req, res) => {
     console.log(req.body);
