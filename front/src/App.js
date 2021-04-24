@@ -3,7 +3,6 @@ import WebViewer from '@pdftron/pdfjs-express';
 import './App.css';
 import axios from 'axios';
 
-
 const App = () => {
   const viewer = useRef(null);
   const [form, setForm] = useState([{
@@ -14,12 +13,11 @@ const App = () => {
 
   const delay = ms => new Promise(res => setTimeout(res, ms));
 
-  // if using a class, equivalent of componentDidMount 
   useEffect(() => {
     WebViewer(
       {
         path: '/webviewer/lib',
-        initialDoc: '/files/app009.pdf',
+        initialDoc: '/files/fl115.pdf',
       },
       viewer.current,
     ).then((instance) => {
@@ -75,8 +73,26 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="header">React sample</div>
-      <div className="webviewer" ref={viewer}></div>
+
+      <div className="top">
+          <h1>navbar goes here</h1>
+      </div>
+
+      <div className='container'>
+        
+        <div className="left">
+          <button>3. Forms to fill out</button>
+        </div>
+
+        <div className="right">
+          <div className="webviewer" ref={viewer}></div>
+        </div>
+  
+      </div>
+
+      <div className='footer'>
+        <h1>footer goes here</h1>
+      </div>
     </div>
   );
 };
